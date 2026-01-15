@@ -24,7 +24,7 @@ function NavBar() {
       <button onClick={()=>{setTarget('blogs')}} className={target === 'blogs' ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : `hover:cursor-pointer`}>Blogs</button>
       <button onClick={()=>{setTarget('create')}} className={target === 'create' ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : 'hover:cursor-pointer'}>Create</button>
       </div>  
-      <button onClick={handleSignOut} className="hover:cursor-pointer">Logout</button>
+      <button onClick={handleSignOut} className="hover:cursor-pointer hover:text-blue-600">Logout</button>
     </div>
   )
 }
