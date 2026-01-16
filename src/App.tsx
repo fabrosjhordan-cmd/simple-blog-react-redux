@@ -4,7 +4,7 @@ import Auth from './components/Auth'
 import { useAuth } from './provider/AuthProvider'
 
 function App() {
-  const {session, profile} =useAuth();
+  const {session} =useAuth();
   return (
     <div>
       {session ? <Blogs /> :  <Auth />}

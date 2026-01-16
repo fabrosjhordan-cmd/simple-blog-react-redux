@@ -2,8 +2,13 @@ import { useState } from "react";
 import { RiNewspaperLine } from "react-icons/ri";
 import { supabase } from "../supabaseClient";
 
-function NavBar() {
-  const [ target, setTarget ] = useState('blogs');
+type PageProps = {
+  target: string
+  setTarget: ()=>{}
+}
+
+function NavBar({target, setTarget}: PageProps) {
+  // const [ target, setTarget ] = useState('blogs');
 
   const handleSignOut = async () =>{
     const { error } = await supabase.auth.signOut()
