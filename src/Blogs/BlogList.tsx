@@ -1,49 +1,88 @@
 import { useAppDispatch, useAppSelector } from "../hooks"
 import {  FaRegTrashAlt } from "react-icons/fa";
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
-import { deletePost, fetchData } from "../PostSlice";
+import { deletePost, fetchByUserData, updatePost } from "../PostSlice";
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { useEffect, useState } from "react";
 import { BsExclamationTriangle } from "react-icons/bs";
+import { CiEdit } from "react-icons/ci";
+import { useAuth } from "../provider/AuthProvider";
+
+dayjs.extend(relativeTime);
 
 export const BlogList = () =>{
-    const posts = useAppSelector((state) => state.posts.items);
-    const [open, setOpen] = useState(false);
+    const posts = useAppSelector((state) => state.posts.userPost);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [openUpdate, setOpenUpdate] = useState(false);
+    const [subject, setSubject] = useState<string | undefined>(undefined)
+    const [itemId, setItemId] = useState();
+    const [body, setBody] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [postNumber, setPostNumber] = useState(undefined)
     const dispatch = useAppDispatch()
+    const {session} = useAuth()
 
     useEffect(() => {
-        dispatch(fetchData())
+        dispatch(fetchByUserData(session?.user.id))
     }, [])
 
-    const handleDeletePost = (id: number) =>{
-        setOpen(true)
+    const handleEdit = async (event: any) =>{
+        event?.preventDefault();
+        setLoading(true);
+        if(body === ''){
+            alert('The content cannot be empty')
+            return null
+        }else{
+            dispatch(updatePost({subject, body, id: postNumber}))
+            setOpenUpdate(false)
+            alert('Post updated')
+        }
+        setLoading(false)
     }
 
     const validateDelete = (id: number)=>{
         dispatch(deletePost(id))
-        setOpen(false)
+        setOpenDelete(false)
     }
 
+    const showOpenUpdate = (id: number) =>{
+        const postId = posts?.find(p=> p.id === id) 
+        setOpenUpdate(true)
+        setSubject(postId?.subject)
+        setBody(postId?.body)
+    }
+
+    
 return (
     <>
-    <div className="w-full items-center">
+    <div className="w-full">
     {posts.map((post)=> (
         <div key={post.id}>
             <div className='flex-1 w-full h-full border-1 my-2 gap-4 p-2 items-center justify-between rounded-xl' hidden={post.hidden}>
-                    <div className="font-bold text-3xl my-1">
-                        <h1>
-                            {post.subject}
-                        </h1>
+                <div className="flex flex-row gap-2 justify-between my-1">
+                    <h1 className="text-3xl font-bold">
+                        {post.subject}
+                    </h1>
+                    <div className="flex flex-col">
+                        <h2 className="text-xs text-gray-700">{dayjs(post.created_at).format('MMM. DD, YYYY - hh:mm A')}</h2>
+                        <h2 className="text-xs text-right text-gray-700"> {dayjs(post.created_at).fromNow()} </h2>
                     </div>
-                    <div className="my-3">
-                        <p>
-                            {post.body}
-                        </p>
-                    </div>
-                    <div className="flex flex-row gap-2 mt-4">
-                        <button onClick={()=>handleDeletePost(post.id)} className="flex flex-row items-center gap-2 border-1 border-zinc-200 bg-red-500 text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-105 transition-300"><FaRegTrashAlt />Delete</button>
-                    </div>
+                    
+                </div>
+                <div className="my-3">
+                    <p>
+                        {post.body}
+                    </p>
+                </div>
+                <div className="flex flex-row gap-2 mt-4">
+                    <button onClick={()=>{handleEdit(post.id), showOpenUpdate(post.id), setPostNumber(post.id)}} className="flex flex-row items-center gap-2 border-1 border-zinc-200 bg-black text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-105 transition-300"><CiEdit />Edit</button>
+                    <button onClick={()=>{setOpenDelete(true), setItemId(post.id)}} className="flex flex-row items-center gap-2 border-1 border-zinc-200 bg-red-500 text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-105 transition-300"><FaRegTrashAlt />Delete</button>
+                </div>
             </div>
-           <Dialog open={open} onClose={setOpen} className="relative z-10">
+
+        {/* Delete Item */}
+        <Dialog open={openDelete} onClose={setOpenDelete} className="relative z-10">
             <DialogBackdrop
             transition
             className="fixed inset-0 bg-gray-900/50 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
@@ -76,7 +115,7 @@ return (
                 <div className="bg-gray-700/25 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                     type="button"
-                    onClick={() => validateDelete(post.id)}
+                    onClick={() => validateDelete(itemId)}
                     className="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-400 sm:ml-3 sm:w-auto"
                     >
                     Delete
@@ -84,11 +123,70 @@ return (
                     <button
                     type="button"
                     data-autofocus
-                    onClick={() => setOpen(false)}
+                    onClick={() => setOpenDelete(false)}
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-white/20 sm:mt-0 sm:w-auto"
                     >
                     Cancel
                     </button>
+                </div>
+                </DialogPanel>
+            </div>
+            </div>
+        </Dialog>
+
+        {/* Update Item */}
+        <Dialog open={openUpdate} onClose={setOpenUpdate} className="relative z-10">
+            <DialogBackdrop
+            transition
+            className="fixed inset-0 bg-gray-900/50 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+            />
+
+            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <DialogPanel
+                transition
+                className="relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-4xl data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+                >
+                <form onSubmit={handleEdit}>          
+                <div className="bg-gray-200 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                    <div className="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-500/30 sm:mx-0 sm:size-10">
+                        <CiEdit aria-hidden="true" className="size-6" />
+                    </div>
+                    <div className="w-full mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <DialogTitle as="h3" className="text-2xl font-semibold">
+                        Update Post
+                        </DialogTitle>
+                        <div className="mt-3">
+                        
+                        <h1 className="font-bold">Subject</h1>
+                        <input type="text" onChange={(e)=> setSubject(e.target.value)} value={subject} className="w-[300px] h-[50%] my-2 p-2 border-1 border-black rounded-md" placeholder="Context"/>
+                        <h3 className="text-md font-semibold mt-4">Content</h3>
+                        <div className="flex justify-start text-left w-full">
+                        <input type="text" onChange={(e)=>setBody(e.target.value)} value={body} className="w-full h-[300px] my-2 p-2 border-1 border-black rounded-md text-left" placeholder="What's on your mind?" />
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </form>
+                <div className="bg-gray-300 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-3">
+                    <button
+                    type="button"
+                    data-autofocus
+                    onClick={() => setOpenUpdate(false)}
+                    className="mt-3 inline-flex w-full justify-center rounded-md border-1 border-black px-3 py-2 text-sm font-semibold inset-ring inset-ring-white/5 hover:bg-gray-400 hover:cursor-pointer sm:mt-0 sm:w-auto"
+                    >
+                    Cancel
+                    </button>
+                    <button
+                    type="button"
+                    onClick={handleEdit}
+                    className="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-400 hover:cursor-pointer sm:ml-3 sm:w-auto" disabled={loading ? true : false}
+                    >
+                    {loading ? 'Updating...': 'Update'}
+                    </button>
+
                 </div>
                 </DialogPanel>
             </div>

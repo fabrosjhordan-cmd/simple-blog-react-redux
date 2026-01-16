@@ -6,16 +6,19 @@ import { useAuth } from "./provider/AuthProvider"
 
 type PostProps = {
     items: Tables<'blogs'>[]
+    allPost: Tables<'blogs'>[]
+    userPost: Tables<'blogs'>[]
     loading: boolean
     error: string | null
 }
 
-const initialState: PostProps = {items: [], loading: false, error: null}
+const initialState: PostProps = {items: [], allPost: [], userPost: [], loading: false, error: null}
+
 export const fetchData = createAsyncThunk(
     'posts/addFetch',
     async (_, thunkAPI)=>{
         try {
-            const { data, error } = await supabase.from('blogs').select()
+            const { data, error } = await supabase.from('blogs').select().order('created_at', {ascending: false})
             if(error) throw error
             return data
         } catch (error) {
@@ -26,10 +29,9 @@ export const fetchData = createAsyncThunk(
 
 export const fetchByUserData = createAsyncThunk(
     'posts/userFetch',
-    async (_, thunkAPI)=>{
+    async (id: number, thunkAPI)=>{
         try {
-            const { session } = useAuth()
-            const { data, error } = await supabase.from('blogs').select().eq('id', session?.user.id).order('created_at', {ascending: false})
+            const { data, error } = await supabase.from('blogs').select('*').eq('user_id', id).order('created_at', {ascending: false})
             if(error) throw error
             return data
         } catch (error) {
@@ -40,10 +42,9 @@ export const fetchByUserData = createAsyncThunk(
 
 export const addPost = createAsyncThunk(
     'posts/addPost',
-    async ({subject, body, userId}: {subject: string, body: string, userId: string | undefined}, thunkAPI) =>{
+    async ({subject, body, userId, official_poster}: {subject: string | null | undefined, body: string, userId: string | undefined, official_poster: string | undefined}, thunkAPI) =>{
         try{
-           
-            const {data, error} = await supabase.from('blogs').insert({subject, body, user_id: userId}).select()
+            const {data, error} = await supabase.from('blogs').insert({subject, body, user_id: userId, official_poster}).select()
             if(error) throw error
             
             return data
@@ -68,6 +69,19 @@ export const deletePost = createAsyncThunk(
     }
 )
 
+export const updatePost = createAsyncThunk(
+    'post/updatepost',
+    async({subject, body, id} : {subject: string | null | undefined, body: string, id: number | undefined}, thunkAPI) =>{
+        try{
+            const { data, error } = await supabase.from('blogs').update({subject, body}).eq('id', id).select().single()
+            if(error) throw error
+            return data
+        }catch(error){
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
+)
+
 const postSlice = createSlice({
     name: 'posts',
     initialState,
@@ -79,19 +93,23 @@ const postSlice = createSlice({
         })
         .addCase(fetchByUserData.fulfilled, (state, action)=>{
             state.loading = false
-            state.items = action.payload
+            state.userPost = action.payload
         })
         .addCase(fetchData.fulfilled, (state, action) =>{
             state.loading = false
-            state.items = action.payload
+            state.allPost = action.payload
         })
         .addCase(addPost.fulfilled, (state, action) =>{
             state.loading = false
             state.items = action.payload
         })
+        .addCase(updatePost.fulfilled, (state, action)=> {
+            state.loading = false
+            state.items = action.payload
+        })
         .addCase(deletePost.fulfilled, (state, action )=>{
             state.loading = false
-            state.items = state.items.filter(
+            state.userPost = state.userPost.filter(
                 post => post.id !== action.payload
             )
         })

@@ -42,8 +42,7 @@ useEffect(() => {
             .select('*')
             .eq('id', newSession?.user.id)
             .single()
-            
-                    setProfile(profile || null)
+                    setProfile(ProfileData || null)
                     setLoading(false)
         }else{
             setProfile(null)
