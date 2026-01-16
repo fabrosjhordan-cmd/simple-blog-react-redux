@@ -1,7 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { supabase } from "./supabaseClient"
+import type { Tables } from "./types"
 
 
+type PostProps = {
+    items: Tables<'blogs'>[]
+    loading: boolean
+    error: string | null
+}
+
+const initialState: PostProps = {items: [], loading: false, error: null}
 
 export const fetchData = createAsyncThunk(
     'posts/addFetch',
@@ -46,7 +54,7 @@ export const deletePost = createAsyncThunk(
 
 const postSlice = createSlice({
     name: 'posts',
-    initialState: {items: [], loading: false, error: null},
+    initialState,
     reducers: {},
     extraReducers: (builders) =>{
         builders

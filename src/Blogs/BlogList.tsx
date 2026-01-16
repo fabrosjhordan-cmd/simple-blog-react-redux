@@ -31,7 +31,6 @@ export const BlogList = () =>{
                         </p>
                     </div>
                     <div className="flex flex-row gap-2 mt-4">
-                        {/* <button onClick={()=>handleHidePost(post.id)} className="flex flex-row items-center gap-2 border-1 border-zinc-500 px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-105 transition-300"><FaEyeSlash />Hide</button> */}
                         <button onClick={()=>handleDeletePost(post.id)} className="flex flex-row items-center gap-2 border-1 border-zinc-500 bg-red-500 text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-105 transition-300"><FaRegTrashAlt />Delete</button>
                     </div>
                 </div>
