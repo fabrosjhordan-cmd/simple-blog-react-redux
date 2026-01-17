@@ -9,7 +9,7 @@ function Blogs() {
   const [page, setPage] = useState<'home' | 'blogs' | 'create'>('blogs')
   const {session} = useAuth();
   return (
-    <div>
+    <div className='mb-4'>
       <div>
         <NavBar target={page} setTarget={setPage} />
       </div>

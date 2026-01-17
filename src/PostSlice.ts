@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { supabase } from "./supabaseClient"
 import type { Tables } from "./types"
-import { useAuth } from "./provider/AuthProvider"
-
 
 type PostProps = {
     items: Tables<'blogs'>[]
@@ -14,18 +12,21 @@ type PostProps = {
 
 const initialState: PostProps = {items: [], allPost: [], userPost: [], loading: false, error: null}
 
+
 export const fetchData = createAsyncThunk(
     'posts/addFetch',
     async (_, thunkAPI)=>{
         try {
-            const { data, error } = await supabase.from('blogs').select().order('created_at', {ascending: false})
+            const { data, error } = await supabase.from('blogs').select('*').order('created_at', {ascending: false})
             if(error) throw error
             return data
         } catch (error) {
             return thunkAPI.rejectWithValue(error);
         }
     }
+
 )
+
 
 export const fetchByUserData = createAsyncThunk(
     'posts/userFetch',
@@ -44,7 +45,7 @@ export const addPost = createAsyncThunk(
     'posts/addPost',
     async ({subject, body, userId, official_poster}: {subject: string | null | undefined, body: string, userId: string | undefined, official_poster: string | undefined}, thunkAPI) =>{
         try{
-            const {data, error} = await supabase.from('blogs').insert({subject, body, user_id: userId, official_poster}).select()
+            const {data, error } = await supabase.from('blogs').insert({subject, body, user_id: userId, official_poster}).select()
             if(error) throw error
             
             return data
@@ -99,6 +100,10 @@ const postSlice = createSlice({
             state.loading = false
             state.allPost = action.payload
         })
+        .addCase(fetchDataPage.fulfilled, (state, action) =>{
+            state.loading = false
+            state.allPost = action.payload
+        })
         .addCase(addPost.fulfilled, (state, action) =>{
             state.loading = false
             state.items = action.payload
@@ -117,3 +122,31 @@ const postSlice = createSlice({
 })
 
 export default postSlice.reducer
+
+
+
+
+// export const fetchDataPage = createAsyncThunk(
+//     'posts/addFetchPage',
+//     async (page: number, thunkAPI)=>{
+//         try {
+//             const allData = fetchData();
+//             const getFromAndTo = ()=>{
+//                     const ITEM_PER_PAGE = 4
+//                     let from = page * ITEM_PER_PAGE
+//                     let to = from + ITEM_PER_PAGE
+//                     if(page > 0){
+//                         from += 1
+//                     }
+//                     return { from, to}
+//                 }
+//             const {from, to} = getFromAndTo()
+//             const { data, error } = await supabase.from('blogs').select().range(from, to).order('created_at', {ascending: false})
+//             if(error) throw error
+//             return data
+            
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue(error);
+//         }
+//     }
+// )

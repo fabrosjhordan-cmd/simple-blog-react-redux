@@ -22,10 +22,11 @@ export const BlogList = () =>{
     const [postNumber, setPostNumber] = useState(undefined)
     const dispatch = useAppDispatch()
     const {session} = useAuth()
-
+    
     useEffect(() => {
         dispatch(fetchByUserData(session?.user.id))
     }, [])
+
 
     const handleEdit = async (event: any) =>{
         event?.preventDefault();
