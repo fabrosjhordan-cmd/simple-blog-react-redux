@@ -34,6 +34,7 @@ for (let i : number = 1 ; i <= totalPage; ++i){
 
     useEffect(() => {
         dispatch(fetchData())
+        setitemsPerPage(5)
     }, [])
 
     useEffect(()=>{

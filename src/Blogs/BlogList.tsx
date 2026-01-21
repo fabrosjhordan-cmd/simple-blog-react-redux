@@ -47,6 +47,7 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
 
     useEffect(() => {
         dispatch(fetchByUserData(userSession))
+        setitemsPerPage(5)
     }, [])
 
 
