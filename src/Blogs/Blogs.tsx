@@ -26,7 +26,7 @@ function Blogs() {
       }
       {page === 'create' &&
         <div className='flex items-start justify-start px-24 w-full'>
-          <Create />
+          <Create setTarget={setPage} />
         </div>
       }
       {page === 'home' &&

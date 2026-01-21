@@ -93,6 +93,22 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     setLoading(false)
   }
 
+  if(numberedPages.length === 0){
+    return (
+    <div className="flex flex-col gap-5 items-center justify-center h-[80vh] overflow-hidden">
+        <p className="text-4xl text-gray-500">
+            No entries found
+        </p>
+        <p className="text-md text-gray-500">
+            Create your first post.
+        </p>
+        <button onClick={()=>setTarget('create')}className="border-1 px-4 py-1 rounded-sm hover:cursor-pointer hover:bg-zinc-300">
+            Create
+        </button>
+    </div>
+    
+    )
+}
     
 return (
     <>
@@ -118,7 +134,7 @@ return (
             </div>
         </div>
         <div className="flex flex-row gap-2 mt-1">
-            <button onClick={()=>{handleEdit(post.id), showOpenUpdate(post.id), setPostNumber(post.id)}} className="flex flex-row items-center gap-2 border-1 border-zinc-200 bg-black text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-101 duration-100"><CiEdit />Edit</button>
+            <button onClick={()=>{showOpenUpdate(post.id), setPostNumber(post.id)}} className="flex flex-row items-center gap-2 border-1 border-zinc-200 bg-black text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-101 duration-100"><CiEdit />Edit</button>
             <button onClick={()=>{setOpenDelete(true), setItemId(post.id)}} className="flex flex-row items-center gap-2 border-1 border-zinc-200 bg-red-500 text-white px-2 py-1 rounded-lg hover:opacity-85 hover:cursor-pointer hover:scale-101 duration-100"><FaRegTrashAlt />Delete</button>
         </div>
         </div>
@@ -205,7 +221,7 @@ return (
                     <input type="text" onChange={(e)=> setSubject(e.target.value)} value={subject} className="w-[300px] h-[50%] my-2 p-2 border-1 border-black rounded-md" placeholder="Context"/>
                     <h3 className="text-md font-semibold mt-4">Content</h3>
                     <div className="flex justify-start text-left w-full">
-                    <input type="text" onChange={(e)=>setBody(e.target.value)} value={body} className="w-full h-[300px] my-2 p-2 border-1 border-black rounded-md text-left" placeholder="What's on your mind?" />
+                    <textarea onChange={(e)=>setBody(e.target.value)} value={body} className="w-full h-[300px] my-2 p-4 border-1 border-black rounded-md text-left resize-none" placeholder="What's on your mind?" />
                     </div>
                     </div>
                 </div>
