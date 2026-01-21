@@ -1,15 +1,12 @@
-import { useState } from "react";
 import { RiNewspaperLine } from "react-icons/ri";
 import { supabase } from "../supabaseClient";
 
 type PageProps = {
   target: string
-  setTarget: ()=>{}
+  setTarget: React.Dispatch<React.SetStateAction<"blogs" | "home" | "create" | "details" | "detailsUser">>
 }
 
 function NavBar({target, setTarget}: PageProps) {
-  // const [ target, setTarget ] = useState('blogs');
-
   const handleSignOut = async () =>{
     const { error } = await supabase.auth.signOut()
     if(error){
@@ -26,8 +23,8 @@ function NavBar({target, setTarget}: PageProps) {
       <h1 className="text-lg font-bold">Simple Blog</h1>
       </div>
       <div className="flex gap-4">
-      <button onClick={()=>{setTarget('home')}} className={target === 'home' ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : `hover:cursor-pointer`}>Home</button>
-      <button onClick={()=>{setTarget('blogs')}} className={target === 'blogs' ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : `hover:cursor-pointer`}>Blogs</button>
+      <button onClick={()=>{setTarget('home')}} className={target === 'home' || target === 'details' ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : `hover:cursor-pointer`}>Home</button>
+      <button onClick={()=>{setTarget('blogs')}} className={target === 'blogs' || target === 'detailsUser'  ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : `hover:cursor-pointer`}>Blogs</button>
       <button onClick={()=>{setTarget('create')}} className={target === 'create' ? `border-1 p-2 bg-zinc-500 text-white rounded-md hover:cursor-pointer` : 'hover:cursor-pointer'}>Create</button>
       </div>  
       <button onClick={handleSignOut} className="hover:cursor-pointer hover:text-blue-600">Logout</button>

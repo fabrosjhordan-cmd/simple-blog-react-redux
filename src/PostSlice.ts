@@ -30,7 +30,7 @@ export const fetchData = createAsyncThunk(
 
 export const fetchByUserData = createAsyncThunk(
     'posts/userFetch',
-    async (id: number, thunkAPI)=>{
+    async (id: string | undefined, thunkAPI)=>{
         try {
             const { data, error } = await supabase.from('blogs').select('*').eq('user_id', id).order('created_at', {ascending: false})
             if(error) throw error
@@ -72,7 +72,7 @@ export const deletePost = createAsyncThunk(
 
 export const updatePost = createAsyncThunk(
     'post/updatepost',
-    async({subject, body, id} : {subject: string | null | undefined, body: string, id: number | undefined}, thunkAPI) =>{
+    async({subject, body, id} : {subject: string | null | undefined, body: string | null | undefined, id: number | undefined}, thunkAPI) =>{
         try{
             const { data, error } = await supabase.from('blogs').update({subject, body}).eq('id', id).select().single()
             if(error) throw error
@@ -97,10 +97,6 @@ const postSlice = createSlice({
             state.userPost = action.payload
         })
         .addCase(fetchData.fulfilled, (state, action) =>{
-            state.loading = false
-            state.allPost = action.payload
-        })
-        .addCase(fetchDataPage.fulfilled, (state, action) =>{
             state.loading = false
             state.allPost = action.payload
         })
@@ -150,3 +146,8 @@ export default postSlice.reducer
 //         }
 //     }
 // )
+
+// .addCase(fetchDataPage.fulfilled, (state, action) =>{
+//             state.loading = false
+//             state.allPost = action.payload
+//         })

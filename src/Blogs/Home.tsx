@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../hooks'
-import { fetchData, fetchDataPage } from '../PostSlice';
+import { fetchData } from '../PostSlice';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-export default function Home() {
+type PostIdProps = {
+    setPostId: React.Dispatch<React.SetStateAction<number>>
+    setTarget: React.Dispatch<React.SetStateAction<"blogs" | "home" | "create" | "details" | "detailsUser">>
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>
+    setActive: React.Dispatch<React.SetStateAction<number>>
+    currentPage: number
+    active: number
+}
+
+export default function Home({ setPostId, setTarget, setCurrentPage, currentPage, active, setActive}:PostIdProps) {
 const posts = useAppSelector((state) => state.posts.allPost);
 const dispatch = useAppDispatch();
 const [loading, setLoading] = useState(false);
-const [currentPage, setCurrentPage] = useState(1)
 const [itemsPerPage, setitemsPerPage] = useState(5);
-const [active, setActive] = useState(0)
 
 const numberedPages: any[]  = []
 
@@ -54,7 +61,7 @@ for (let i : number = 1 ; i <= totalPage; ++i){
   return (
     <div className="w-full">
     {thisPageItems.map((post)=> (
-        <div key={post.id}>
+        <div key={post.id} onClick={()=> {setPostId(post.id), setTarget('details')}}>
             <div className='flex-1 w-full h-full border-1 my-2 gap-4 p-2 items-center justify-between rounded-xl hover:scale-101 hover:cursor-pointer ease-in ease-out duration-300' hidden={post.hidden}>
                 <div className="flex flex-row gap-2 justify-between my-1">
                     <h1 className="text-3xl font-bold">

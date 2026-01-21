@@ -71,7 +71,7 @@ function Auth() {
                     </button>}
                 </div>
             </form>
-            <button onClick={()=>{active === 'Sign in' ? setActive('Sign up') : setActive('Sign in')}} className='text-blue-700 hover:cursor-pointer'>{active === 'Sign in' ? 'Sign up' : 'Sign in'}</button>
+            <button onClick={()=>{active === 'Sign in' ? setActive('Sign up') : setActive('Sign in')}} className='text-blue-700 hover:text-blue-900 font-bold text-lg hover:cursor-pointer'>{active === 'Sign in' ? 'Sign up' : 'Sign in'}</button>
         </div>
     </div>
   )

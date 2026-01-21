@@ -4,10 +4,16 @@ import Auth from './components/Auth'
 import { useAuth } from './provider/AuthProvider'
 
 function App() {
-  const {session} =useAuth();
+  const {session, loading} =useAuth();
+
   return (
     <div>
-      {session ? <Blogs /> :  <Auth />}
+    { loading ? 
+      <div className='flex items-center justify-center mt-12'>Loading...</div> 
+      :
+      session ? 
+      <Blogs /> : <Auth />
+    }
     </div>
   )
 }

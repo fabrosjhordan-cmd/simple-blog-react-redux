@@ -22,7 +22,7 @@ export default function AuthProvider({children}:PropsWithChildren){
 
 useEffect(() => {
   const hydrate = async()=>{
-    const { data } = await supabase.auth.getSession();
+    const { data } : any = await supabase.auth.getSession();
     setSession(data.session)
     setHydrated(true)
     setLoading(false)
@@ -31,12 +31,11 @@ useEffect(() => {
   hydrate()
 
   const {data: listener} = supabase.auth.onAuthStateChange(
-    async (_event, newSession) =>{
+    async (_event, newSession: any) =>{
         setSession(newSession)
 
         if(hydrated && newSession?.user){
             setLoading(true)
-
             const { data: ProfileData } = await supabase
             .from('profiles')
             .select('*')
