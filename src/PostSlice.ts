@@ -91,6 +91,9 @@ const postSlice = createSlice({
         .addCase(fetchData.pending, state =>{
             state.loading = true
         })
+        .addCase(fetchByUserData.pending, state =>{
+            state.loading = true
+        })
         .addCase(fetchByUserData.fulfilled, (state, action)=>{
             state.loading = false
             state.userPost = action.payload
