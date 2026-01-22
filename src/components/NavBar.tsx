@@ -1,5 +1,7 @@
 import { RiNewspaperLine } from "react-icons/ri";
 import { supabase } from "../supabaseClient";
+import { ImSpinner2 } from "react-icons/im";
+import { useState } from "react";
 
 type PageProps = {
   target: string
@@ -7,13 +9,20 @@ type PageProps = {
 }
 
 function NavBar({target, setTarget}: PageProps) {
+  const [loading, setLoading] = useState(false)
   const handleSignOut = async () =>{
+    setLoading(true)
     const { error } = await supabase.auth.signOut()
     if(error){
       alert(error.cause || error.message);
+      setLoading(false)
     }else{
-      alert('Signed Out Successfully');
+      setLoading(false)
     }
+  }
+
+  if(loading){
+    return <div className='flex w-full h-[70vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
   }
 
   return (

@@ -12,7 +12,6 @@ type PostProps = {
 
 const initialState: PostProps = {items: [], allPost: [], userPost: [], loading: false, error: null}
 
-
 export const fetchData = createAsyncThunk(
     'posts/addFetch',
     async (_, thunkAPI)=>{
@@ -24,13 +23,11 @@ export const fetchData = createAsyncThunk(
             return thunkAPI.rejectWithValue(error);
         }
     }
-
 )
-
 
 export const fetchByUserData = createAsyncThunk(
     'posts/userFetch',
-    async (id: string | undefined, thunkAPI)=>{
+    async (id: number, thunkAPI)=>{
         try {
             const { data, error } = await supabase.from('blogs').select('*').eq('user_id', id).order('created_at', {ascending: false})
             if(error) throw error
@@ -86,7 +83,9 @@ export const updatePost = createAsyncThunk(
 const postSlice = createSlice({
     name: 'posts',
     initialState,
-    reducers: {},
+    reducers: {
+
+    },
     extraReducers: (builders) =>{
         builders
         .addCase(fetchData.pending, state =>{

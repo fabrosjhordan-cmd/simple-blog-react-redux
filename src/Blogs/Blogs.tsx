@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NavBar from '../components/NavBar'
 import { BlogList } from './BlogList'
 import Create from './Create'
@@ -6,13 +6,38 @@ import Home from './Home'
 import BlogDetails from './BlogDetails'
 import BlogDetailsByUser from './BlogsDetailsByUser'
 
+type pageProps = 'home' | 'blogs' | 'create' | 'details' | 'detailsUser'
+
 function Blogs() {
-  const [page, setPage] = useState<'home' | 'blogs' | 'create' | 'details' | 'detailsUser'>('home')
-  const [postId , setPostId] = useState<number>(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [currentPageUser, setCurrentPageUser] = useState(1)
-  const [active, setActive] = useState(0)
-  const [activeByUser, setActiveByUser] = useState(0)
+  const [page, setPage] = useState<pageProps>(()=>{
+    const storedPage = sessionStorage.getItem('activePage')
+    return storedPage === 'home' || storedPage === 'blogs' || storedPage === 'create' || storedPage === 'details' || storedPage === 'detailsUser' ? storedPage : 'home'
+  })
+  const [postId , setPostId] = useState<number>(()=>{
+    return Number(sessionStorage.getItem('postId')) || 1
+  })
+  const [currentPage, setCurrentPage] = useState(()=>{
+    return Number(sessionStorage.getItem('currentPage')) || 1
+  })
+  const [currentPageUser, setCurrentPageUser] = useState(()=>{
+    return Number(sessionStorage.getItem('currentPageUser')) || 1
+  })
+  const [active, setActive] = useState(()=>{
+    return Number(sessionStorage.getItem('activePageNumber')) || 0
+  })
+  const [activeByUser, setActiveByUser] = useState<number>(()=>{
+    return Number(sessionStorage.getItem('activePageNumberUser')) || 0
+  })
+  const [loading, setLoading] = useState(true);
+
+  useEffect(()=>{
+      sessionStorage.setItem('activePage', page)
+      sessionStorage.setItem('postId', String(postId))
+      sessionStorage.setItem('currentPage', String(currentPage))
+      sessionStorage.setItem('currentPageUser', String(currentPageUser))
+      sessionStorage.setItem('activePageNumber', String(active))
+      sessionStorage.setItem('activePageNumberUser', String(activeByUser))
+  }, [page, postId, currentPage, currentPageUser, active, activeByUser])
 
   return (
     <div className='mb-4'>

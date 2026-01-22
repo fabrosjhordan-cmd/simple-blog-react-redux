@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient';
+import { ImSpinner2 } from 'react-icons/im';
 
 function Auth() {
   const [loading, setLoading] = useState(false);
@@ -17,10 +18,11 @@ function Auth() {
 
         if(error){
             alert(error.cause || error.message);
-        }else{
-            alert('Successfully Signed in');
+            setLoading(false)
         }
-        setLoading(false)
+        else{
+            setLoading(false)
+        }
     }
 
     const handleSignUp = async (event: any ) =>{
@@ -33,10 +35,16 @@ function Auth() {
 
         if(error){
             alert(error.cause || error.message);
-        }else{
-            alert('Successfully Signed up');
+            setLoading(false)
         }
-        setLoading(false)
+        else{
+            setLoading(false)
+        }
+        
+    }
+
+    if(loading){
+        return <div className='flex w-full h-[70vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
     }
 
     return (

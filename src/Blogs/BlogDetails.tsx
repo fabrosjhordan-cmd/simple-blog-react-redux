@@ -1,7 +1,10 @@
-import { useAppSelector } from '../hooks'
+import { useAppDispatch, useAppSelector } from '../hooks'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useEffect } from 'react';
 import { FaAngleLeft } from "react-icons/fa";
+import { fetchData } from '../PostSlice';
+import { ImSpinner2 } from 'react-icons/im';
 
 dayjs.extend(relativeTime);
 
@@ -12,6 +15,15 @@ type postIdProps ={
 export default function BlogDetails({targetPost, setTarget}: postIdProps) {
 const posts = useAppSelector((state) => state.posts.allPost)
 const postData = posts?.find(p=> p.id === targetPost)
+const dispatch = useAppDispatch()
+
+useEffect(()=>{
+    dispatch(fetchData())
+}, )
+
+if(!postData){
+  return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
+}
 
 const goBack = () =>{
   setTarget('home')

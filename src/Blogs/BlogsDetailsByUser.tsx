@@ -2,11 +2,12 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { useAppDispatch, useAppSelector } from '../hooks'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaAngleLeft, FaRegTrashAlt } from "react-icons/fa";
 import { BsExclamationTriangle } from 'react-icons/bs';
-import { deletePost, updatePost } from '../PostSlice';
+import { deletePost, fetchData, updatePost } from '../PostSlice';
 import { CiEdit } from 'react-icons/ci';
+import { ImSpinner2 } from 'react-icons/im';
 
 dayjs.extend(relativeTime);
 
@@ -17,12 +18,16 @@ type postIdProps ={
 export default function BlogDetailsByUser({targetPost, setTarget}: postIdProps) {
 const [updating, setUpdating] = useState(false)
 const [openDelete, setOpenDelete] = useState(false);
-const dispatch = useAppDispatch()
-const posts = useAppSelector((state) => state.posts.userPost)
+const posts = useAppSelector((state) => state.posts.allPost)
 const postData = posts?.find(p=> p.id === targetPost)
+const dispatch = useAppDispatch()
 const [subject, setSubject] = useState<any>(postData?.subject);
 const [body, setBody] = useState<any>(postData?.body);
 const [loading, setLoading] = useState(false)
+
+useEffect(()=>{
+  dispatch(fetchData())
+}, [])
 
 
 const validateDelete =(id: any)=>{
@@ -45,12 +50,14 @@ const updateContent = async (event: any) =>{
     else{
       dispatch(updatePost({subject, body, id: targetPost}))
       alert('Post published')
-      setSubject('')
-      setSubject('')
-      setBody('')
+      setTarget('blogs')
       setLoading(false)
     }
   }
+
+if(!postData){
+  return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
+}
 
 return (
 <div  className='w-full'>

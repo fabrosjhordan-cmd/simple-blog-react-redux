@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { BsExclamationTriangle } from "react-icons/bs";
 import { CiEdit } from "react-icons/ci";
 import { useAuth } from "../provider/AuthProvider";
+import { ImSpinner2 } from "react-icons/im";
 
 dayjs.extend(relativeTime);
 
@@ -27,7 +28,7 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     const [subject, setSubject] = useState<string>('')
     const [itemId, setItemId] = useState(1);
     const [body, setBody] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [postNumber, setPostNumber] = useState<number>(1)
     const dispatch = useAppDispatch()
     const {session} = useAuth()
@@ -48,6 +49,7 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     useEffect(() => {
         dispatch(fetchByUserData(userSession))
         setitemsPerPage(5)
+        setLoading(false)
     }, [])
 
 
@@ -57,23 +59,25 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
         if(subject?.trim() === '')
         if(body?.trim() === ''){
             alert('The content cannot be empty')
+            setLoading(false)
             return null
         }else{
             dispatch(updatePost({subject, body, id: postNumber}))
             setOpenUpdate(false)
+            setLoading(false)
             alert('Post updated')
         }
-        setLoading(false)
     }
 
     const validateDelete = (id: number)=>{
+        setLoading(true)
         dispatch(deletePost(id))
         setOpenDelete(false)
+        setLoading(false)
     }
 
     const showOpenUpdate = (id: number) =>{
         const  postId  = posts?.find(p=> p.id === id) 
-        console.log(postId)
         setOpenUpdate(true)
         setSubject(postId?.subject ?? "")
         setBody(postId?.body ?? "")
@@ -93,7 +97,11 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     setLoading(false)
   }
 
-  if(numberedPages.length === 0){
+if(loading){
+    return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
+}
+
+if(numberedPages.length === 0){
     return (
     <div className="flex flex-col gap-5 items-center justify-center h-[80vh] overflow-hidden">
         <p className="text-4xl text-gray-500">
@@ -106,9 +114,10 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
             Create
         </button>
     </div>
-    
     )
 }
+
+
     
 return (
     <>
@@ -254,14 +263,14 @@ return (
 
     {/* Pagination */}
     <div className='flex gap-2 items-center justify-center'>
-    <button onClick={pagingPrev} className={`border-1 px-3 py-1 rounded-md ${currentPageUser === 1 ? 'bg-gray-400 opacity-50' : 'hover:bg-gray-300 hover:cursor-pointer'}`} disabled={currentPageUser === 1 || loading === true ? true : false}>Previous</button>
+    <button onClick={pagingPrev} className={`border-1 px-3 py-1 rounded-md ${currentPageUser === 1 ? 'bg-gray-400 opacity-50' : 'hover:bg-gray-300 hover:cursor-pointer'}`} disabled={currentPageUser === 1 || loading ? true : false}>Previous</button>
     {numberedPages.map((pages, index)=>{
         return(
             <button key={index} onClick={()=>{setCurrentPageUser(pages), setActiveByUser(index)}} className={`border-1 px-3 py-1 rounded-sm hover:bg-blue-200 hover:cursor-pointer ${activeByUser === index ? 'bg-gray-700 text-white border-black' : ''}`}>{pages}</button>
         ) 
         })
         }
-    <button onClick={pagingNext} className={`border-1 px-3 py-1 rounded-md ${currentPageUser === totalPage ? "bg-gray-400 opacity-50" : "hover:bg-gray-300 hover:cursor-pointer"}`} disabled={currentPageUser === totalPage || loading === true ? true : false }>Next</button>
+    <button onClick={pagingNext} className={`border-1 px-3 py-1 rounded-md ${currentPageUser === totalPage ? "bg-gray-400 opacity-50" : "hover:bg-gray-300 hover:cursor-pointer"}`} disabled={currentPageUser === totalPage || loading ? true : false }>Next</button>
     </div>
     </div>
    

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../hooks'
 import { fetchData } from '../PostSlice';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { ImSpinner2 } from 'react-icons/im';
 
 dayjs.extend(relativeTime);
 
@@ -18,7 +19,7 @@ type PostIdProps = {
 export default function Home({ setPostId, setTarget, setCurrentPage, currentPage, active, setActive}:PostIdProps) {
 const posts = useAppSelector((state) => state.posts.allPost);
 const dispatch = useAppDispatch();
-const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(true);
 const [itemsPerPage, setitemsPerPage] = useState(5);
 
 const numberedPages: any[]  = []
@@ -35,6 +36,7 @@ for (let i : number = 1 ; i <= totalPage; ++i){
     useEffect(() => {
         dispatch(fetchData())
         setitemsPerPage(5)
+        setLoading(false)
     }, [])
 
     useEffect(()=>{
@@ -56,6 +58,10 @@ for (let i : number = 1 ; i <= totalPage; ++i){
     setCurrentPage(currentPage+1)
     setActive(active+1)
     setLoading(false)
+  }
+
+  if(loading === true){
+    return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
   }
   
 
@@ -82,14 +88,14 @@ for (let i : number = 1 ; i <= totalPage; ++i){
             )
     }
     <div className='flex gap-2 items-center justify-center'>
-    <button onClick={pagingPrev} className={`border-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gray-400 opacity-50' : 'hover:bg-gray-300 hover:cursor-pointer'}`} disabled={currentPage === 1 || loading === true ? true : false}>Previous</button>
+    <button onClick={pagingPrev} className={`border-1 px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gray-400 opacity-50' : 'hover:bg-gray-300 hover:cursor-pointer'}`} disabled={currentPage === 1 || loading ? true : false}>Previous</button>
     {numberedPages.map((pages, index)=>{
         return(
             <button key={index} onClick={()=>{setCurrentPage(pages), setActive(index)}} className={`border-1 px-3 py-1 rounded-sm hover:bg-blue-200 hover:cursor-pointer ${active === index ? 'bg-gray-700 text-white border-black' : ''}`}>{pages}</button>
         ) 
         })
         }
-    <button onClick={pagingNext} className={`border-1 px-3 py-1 rounded-md ${currentPage === totalPage ? "bg-gray-400 opacity-50" : "hover:bg-gray-300 hover:cursor-pointer"}`} disabled={currentPage === totalPage || loading === true ? true : false }>Next</button>
+    <button onClick={pagingNext} className={`border-1 px-3 py-1 rounded-md ${currentPage === totalPage ? "bg-gray-400 opacity-50" : "hover:bg-gray-300 hover:cursor-pointer"}`} disabled={currentPage === totalPage || loading ? true : false }>Next</button>
     </div>
     </div>
   )
