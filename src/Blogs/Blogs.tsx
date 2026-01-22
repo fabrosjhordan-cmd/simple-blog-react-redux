@@ -5,6 +5,7 @@ import Create from './Create'
 import Home from './Home'
 import BlogDetails from './BlogDetails'
 import BlogDetailsByUser from './BlogsDetailsByUser'
+import { ImSpinner2 } from 'react-icons/im'
 
 type pageProps = 'home' | 'blogs' | 'create' | 'details' | 'detailsUser'
 
@@ -28,7 +29,7 @@ function Blogs() {
   const [activeByUser, setActiveByUser] = useState<number>(()=>{
     return Number(sessionStorage.getItem('activePageNumberUser')) || 0
   })
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(()=>{
       sessionStorage.setItem('activePage', page)
@@ -39,10 +40,14 @@ function Blogs() {
       sessionStorage.setItem('activePageNumberUser', String(activeByUser))
   }, [page, postId, currentPage, currentPageUser, active, activeByUser])
 
+  if(loading){
+    return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
+  }
+
   return (
     <div className='mb-4'>
       <div>
-        <NavBar target={page} setTarget={setPage} />
+        <NavBar target={page} setTarget={setPage} setLoading={setLoading}/>
       </div>
       {page === 'blogs' &&
         <div className='flex items-center justify-center px-24 '>

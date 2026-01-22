@@ -18,6 +18,7 @@ type PostIdProps = {
 
 export default function Home({ setPostId, setTarget, setCurrentPage, currentPage, active, setActive}:PostIdProps) {
 const posts = useAppSelector((state) => state.posts.allPost);
+const isLoading = useAppSelector((state)=> state.posts.loading)
 const dispatch = useAppDispatch();
 const [loading, setLoading] = useState(true);
 const [itemsPerPage, setitemsPerPage] = useState(5);
@@ -60,7 +61,7 @@ for (let i : number = 1 ; i <= totalPage; ++i){
     setLoading(false)
   }
 
-  if(loading === true){
+  if(isLoading){
     return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
   }
   

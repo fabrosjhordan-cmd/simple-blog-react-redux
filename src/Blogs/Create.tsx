@@ -29,7 +29,6 @@ function Create({setTarget}: CreateProps) {
     }
     else{
       dispatch(addPost({subject, body, userId: session?.user.id, official_poster: session?.user?.email}))
-      alert('Post published')
       setTarget('blogs')
       setSubject('')
       setSubject('')
@@ -47,7 +46,7 @@ function Create({setTarget}: CreateProps) {
       <div className="flex justify-start text-left w-full">
       <textarea onChange={(e)=>setBody(e.target.value)} value={body} className="w-full h-[300px] my-2 p-4 border-1 rounded-md resize-none" placeholder="What's on your mind?" required/>
       </div>
-      <button className="border-1 py-2 px-12 rounded-md bg-black text-white hover:cursor-pointer hover:opacity-80">{loading ? 'Posting' : 'Post'}</button>
+      <button className="border-1 py-2 px-12 rounded-md bg-black text-white hover:cursor-pointer hover:opacity-80" disabled={loading ? true : false}>{loading ? 'Posting' : 'Post'}</button>
       </form>
     </div>
   )

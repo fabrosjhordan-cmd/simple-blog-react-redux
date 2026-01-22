@@ -29,11 +29,12 @@ useEffect(()=>{
   dispatch(fetchData())
 }, [])
 
-
 const validateDelete =(id: any)=>{
+  setLoading(true)
   dispatch(deletePost(id))
   alert('Item Deleted')
   setTarget('blogs')
+  setLoading(false)
 }
 
 const updateContent = async (event: any) =>{
@@ -41,10 +42,12 @@ const updateContent = async (event: any) =>{
     setLoading(true)
     if(subject?.trim() === ''){
       alert('The subject cannot be empty')
+      setLoading(false)
       return null
     }
     if(body?.trim() === ''){
       alert('The content cannot be empty')
+      setLoading(false)
       return null
     }
     else{
@@ -128,6 +131,7 @@ return (
                     <button
                     type="button"
                     onClick={() => validateDelete(postData?.id)}
+                    disabled={loading?true : false}
                     className="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-400 sm:ml-3 sm:w-auto"
                     >
                     Delete
@@ -150,7 +154,7 @@ return (
       <textarea onChange={(e)=>setBody(e.target.value)} value={body} className="w-full h-[300px] my-2 p-4 border-1 rounded-md text-left overflow-auto resize-none" placeholder="What's on your mind?" required/>
       </div>
       <div className='flex gap-2'>
-        <button className="border-1 py-2 px-12 rounded-md bg-black text-white hover:cursor-pointer hover:opacity-80">{loading ? 'Updating...' : 'Update'}</button>
+        <button className="border-1 py-2 px-12 rounded-md bg-black text-white hover:cursor-pointer hover:opacity-80" disabled={loading ? true : false}>{loading ? 'Updating...' : 'Update'}</button>
         <button className="border-1 py-2 px-12 rounded-md bg-white hover:cursor-pointer hover:opacity-80" onClick={()=>setUpdating(false)}>Cancel</button>
       </div>
     </form>

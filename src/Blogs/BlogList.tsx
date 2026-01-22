@@ -23,6 +23,7 @@ type BlogsByUserProps = {
 
 export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, setActiveByUser, setTarget, setPostId} : BlogsByUserProps) =>{
     const posts = useAppSelector((state) => state.posts.userPost);
+    const isLoading = useAppSelector((state) => state.posts.loading)
     const [openDelete, setOpenDelete] = useState(false);
     const [openUpdate, setOpenUpdate] = useState(false);
     const [subject, setSubject] = useState<string>('')
@@ -34,7 +35,6 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     const {session} = useAuth()
     const userSession = session?.user.id
     const [itemsPerPage, setitemsPerPage] = useState(5);
-
     const numberedPages: any[]  = []
 
     const lastItemIndex = currentPageUser * itemsPerPage
@@ -49,9 +49,7 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     useEffect(() => {
         dispatch(fetchByUserData(userSession))
         setitemsPerPage(5)
-        setLoading(false)
     }, [])
-
 
     const handleEdit = async (event: any) =>{
         event.preventDefault();
@@ -97,7 +95,7 @@ export const BlogList = ({currentPageUser, setCurrentPageUser, activeByUser, set
     setLoading(false)
   }
 
-if(loading){
+if(isLoading){
     return <div className='flex w-full h-[60vh] items-center justify-center'><ImSpinner2 className='animate-spin text-5xl text-blue-600' /></div>
 }
 
@@ -116,8 +114,6 @@ if(numberedPages.length === 0){
     </div>
     )
 }
-
-
     
 return (
     <>
@@ -191,6 +187,7 @@ return (
                 <button
                 type="button"
                 onClick={() => validateDelete(itemId)}
+                disabled={loading ? true : false}
                 className="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-400 sm:ml-3 sm:w-auto"
                 >
                 Delete
@@ -249,7 +246,8 @@ return (
                 <button 
                 type="button"
                 onClick={handleEdit}
-                className="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-400 hover:cursor-pointer sm:ml-3 sm:w-auto" disabled={loading ? true : false}
+                disabled={loading ? true : false}
+                className="inline-flex w-full justify-center rounded-md bg-gray-800 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-400 hover:cursor-pointer sm:ml-3 sm:w-auto" 
                 >
                 {loading ? 'Updating...': 'Update'}
                 </button>
