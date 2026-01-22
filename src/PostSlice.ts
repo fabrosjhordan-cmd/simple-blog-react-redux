@@ -27,7 +27,7 @@ export const fetchData = createAsyncThunk(
 
 export const fetchByUserData = createAsyncThunk(
     'posts/userFetch',
-    async (id: number, thunkAPI)=>{
+    async (id: string | undefined, thunkAPI)=>{
         try {
             const { data, error } = await supabase.from('blogs').select('*').eq('user_id', id).order('created_at', {ascending: false})
             if(error) throw error

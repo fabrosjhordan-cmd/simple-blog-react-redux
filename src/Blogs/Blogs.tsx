@@ -28,7 +28,7 @@ function Blogs() {
   const [activeByUser, setActiveByUser] = useState<number>(()=>{
     return Number(sessionStorage.getItem('activePageNumberUser')) || 0
   })
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(()=>{
       sessionStorage.setItem('activePage', page)
